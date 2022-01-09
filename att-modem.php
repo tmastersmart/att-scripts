@@ -2,7 +2,7 @@
 // --------------------------------------------------
 // ATT modem online check script  (C) 2022 v1.01
 // --------------------------------------------------
-//
+// https://github.com/tmastersmart/att-scripts
 
 // modem pi 
 $ip  ="192.168.1.254";
