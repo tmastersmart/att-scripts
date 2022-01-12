@@ -1,8 +1,8 @@
 <?php
 // --------------------------------------------------
-// ATT modem online check script  (C) 2022 v1.01
+// ATT modem online check script  (C) 2022 v1.1
 // --------------------------------------------------
-// https://github.com/tmastersmart/att-scripts
+//
 
 // modem pi 
 $ip  ="192.168.1.254";
@@ -14,12 +14,15 @@ $file = "modem.log";
 
 
 $agent="mmattv1";$phpVersion= phpversion();
+#"===============================================================
+# "ATT Modem script (c)2022 by winnfreenet.com all rights reserved
+#"===============================================================
 
 $datum = date('[H:i:s]');
 #print "$datum Checking $ip Time Online :->";
 $error = ""; $getheader = false; $htmlON=false;
 $html = http_request('GET', $ip, 80 , $url);
-$online="NA";$status="-";
+$online="NA";$status="-";$signal="-";
 $pos1 = strpos($html ,"Time Since Last Boot"); 
 
 if($pos1){
@@ -28,16 +31,26 @@ $test = substr($html, ($pos1),90);
 }
 
 $html = http_request('GET', $ip, 80 , $url2);
-//small_warning.gif
+//small_warning.gif icon-broadband.png
 $pos1 = strpos($html ,"warning"); if ($pos1){$status="warning";}
-//$pos1 = strpos($html ,"online");  if ($pos1){$status="online";}
+
+$pos1 = strpos($html ,">Up<");    if ($pos1){$status="UP";}
+$pos1 = strpos($html ,">Down<");  if ($pos1){$status="Down";}
+
+// signal-0.png 1-5 signal
+$pos1 = strpos($html ,"signal-0.png");  if ($pos1){$signal="0";}
+$pos1 = strpos($html ,"signal-1.png");  if ($pos1){$signal="1";}
+$pos1 = strpos($html ,"signal-2.png");  if ($pos1){$signal="2";}
+$pos1 = strpos($html ,"signal-3.png");  if ($pos1){$signal="3";}
+$pos1 = strpos($html ,"signal-4.png");  if ($pos1){$signal="4";}
+$pos1 = strpos($html ,"signal-5.png");  if ($pos1){$signal="5";}
 
 
-#print "$online";
+
 
 $fileOUT = fopen("$path/$file", "a");
 flock( $fileOUT, LOCK_EX );
-fwrite ($fileOUT, "$datum,$online,$status,, \n");
+fwrite ($fileOUT, "$datum,$online,$status,$signal,, \n");
 flock( $fileOUT, LOCK_UN );
 fclose ($fileOUT);
 die;
