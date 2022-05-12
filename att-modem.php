@@ -3,29 +3,16 @@
 // ATT modem online check script  (C) 2022 v1.2
 // --------------------------------------------------
 // log the att modem stats
-
 //AT&T modem logging script.   
-
 //a PHP script to log your modem
-
 //Manufacturer	Pace Plc
 //Model	5268AC
-
-
 //Outdoor Antenna Information
 //Type	Version
 //Manufacturer	NetComm Wireless Limited
 //Model	IFWA661 Series
-
-
 //This is a script to monitor the att modem and log reboots and down events.
 //run in chron on a pi
-
-
-
-
-
-
 // modem 
 //$ip  ="192.168.2.240";
 $ip  ="192.168.0.1";
