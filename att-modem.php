@@ -1,6 +1,6 @@
 <?php
 // --------------------------------------------------
-// ATT modem online check script  (C) 2022 v1.2
+// ATT modem/router online check script  (C) 2022 v1.2
 // --------------------------------------------------
 // log the att modem stats
 //AT&T modem logging script.   
@@ -13,6 +13,9 @@
 //Model	IFWA661 Series
 //This is a script to monitor the att modem and log reboots and down events.
 //run in chron on a pi
+
+//https://github.com/tmastersmart/att-scripts/blob/main/readme.txt
+
 // modem 
 //$ip  ="192.168.2.240";
 $ip  ="192.168.0.1";
