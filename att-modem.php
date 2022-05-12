@@ -14,7 +14,7 @@
 //This is a script to monitor the att modem and log reboots and down events.
 //run in chron on a pi
 
-//https://github.com/tmastersmart/att-scripts/readme.txt
+//https://github.com/tmastersmart/att-scripts/blob/main/readme.txt
 
 // modem 
 //$ip  ="192.168.2.240";
