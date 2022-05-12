@@ -1,24 +1,47 @@
 <?php
 // --------------------------------------------------
-// ATT modem online check script  (C) 2022 v1.1
+// ATT modem online check script  (C) 2022 v1.2
 // --------------------------------------------------
-//
+// log the att modem stats
 
-// modem pi 
-$ip  ="192.168.1.254";
-$url ="/xslt?PAGE=C_0_0";
-$url2="/xslt?PAGE=A_0_0";
+//AT&T modem logging script.   
+
+//a PHP script to log your modem
+
+//Manufacturer	Pace Plc
+//Model	5268AC
+
+
+//Outdoor Antenna Information
+//Type	Version
+//Manufacturer	NetComm Wireless Limited
+//Model	IFWA661 Series
+
+
+//This is a script to monitor the att modem and log reboots and down events.
+//run in chron on a pi
+
+
+
+
+
+
+// modem pi
+//$ip  ="192.168.2.240";
+$ip  ="192.168.0.1";
+$url ="/xslt?PAGE=C_0_0";//mode
+$url2="/xslt?PAGE=A_0_0";//home
+$url3="/xslt?PAGE=C_1_0";//status
 $path = dirname(__FILE__) ;
 $file = "modem.log";
 
 
 
 $agent="mmattv1";$phpVersion= phpversion();
-#"===============================================================
-# "ATT Modem script (c)2022 by winnfreenet.com all rights reserved
-#"===============================================================
 
 $datum = date('[H:i:s]');
+
+$time = date('[g:i a]');
 #print "$datum Checking $ip Time Online :->";
 $error = ""; $getheader = false; $htmlON=false;
 $html = http_request('GET', $ip, 80 , $url);
@@ -26,8 +49,18 @@ $online="NA";$status="-";$signal="-";
 $pos1 = strpos($html ,"Time Since Last Boot"); 
 
 if($pos1){
-$test = substr($html, ($pos1),90);
- $Lpos = strpos($test, '<td>');$Rpos = strpos($test, "</td>");$online = substr($test, $Lpos+4,$Rpos-$Lpos-1);
+$test = substr($html, ($pos1),90);//print $test;
+ $Lpos = strpos($test, '<td>');$Rpos = strpos($test, '</td>');$online = substr($test, $Lpos+4,$Rpos-$Lpos-1);
+
+$pos1 = strpos($html ,"Temperature"); 
+$test = substr($html, ($pos1),78);//print $test;
+$Lpos = strpos($test, '<td>');
+$newtest= substr($test,$Lpos,22);// print "[$newtest]";
+$Rpos = strpos($newtest, '</td>');
+$Temperature = substr($newtest, 4,$Rpos-4);
+//print $Temperature;
+
+
 }
 
 $html = http_request('GET', $ip, 80 , $url2);
@@ -37,20 +70,87 @@ $pos1 = strpos($html ,"warning"); if ($pos1){$status="warning";}
 $pos1 = strpos($html ,">Up<");    if ($pos1){$status="UP";}
 $pos1 = strpos($html ,">Down<");  if ($pos1){$status="Down";}
 
-// signal-0.png 1-5 signal
-$pos1 = strpos($html ,"signal-0.png");  if ($pos1){$signal="0";}
-$pos1 = strpos($html ,"signal-1.png");  if ($pos1){$signal="1";}
-$pos1 = strpos($html ,"signal-2.png");  if ($pos1){$signal="2";}
-$pos1 = strpos($html ,"signal-3.png");  if ($pos1){$signal="3";}
-$pos1 = strpos($html ,"signal-4.png");  if ($pos1){$signal="4";}
-$pos1 = strpos($html ,"signal-5.png");  if ($pos1){$signal="5";}
+// signal-0.png 1-5 signal"images/signal-1.png" alt="signalstrength"
+$pos1 = strpos($html ,'signal-0.png" alt="signalstrength');  if ($pos1){$signal="0";}
+$pos1 = strpos($html ,'signal-1.png" alt="signalstrength');  if ($pos1){$signal="1";}
+$pos1 = strpos($html ,'signal-2.png" alt="signalstrength');  if ($pos1){$signal="2";}
+$pos1 = strpos($html ,'signal-3.png" alt="signalstrength');  if ($pos1){$signal="3";}
+$pos1 = strpos($html ,'signal-4.png" alt="signalstrength');  if ($pos1){$signal="4";}
+$pos1 = strpos($html ,'signal-5.png" alt="signalstrength');  if ($pos1){$signal="5";}
 
+$html = http_request('GET', $ip, 80 , $url3);
+//RSRP	
+//RSRQ	
+//RSSI
+$pos1 = strpos($html ,"RSRP"); 
+$test = substr($html, ($pos1),42);//print"[$test]";
+$Lpos = strpos($test, '<td>');
+$newtest= substr($test,$Lpos,22); 
+$Rpos = strpos($newtest, '</td>');
+$RSRP = substr($newtest, 4,$Rpos-4);
+//print substr($test, $Lpos+4,$Rpos-4);
+
+$pos1 = strpos($html ,"RSRQ"); 
+$test = substr($html, ($pos1),42);//print"[$test]";
+$Lpos = strpos($test, '<td>');
+$newtest= substr($test,$Lpos,22); 
+$Rpos = strpos($newtest, '</td>');
+$RSRQ = substr($newtest, 4,$Rpos-4);
+//print substr($test, $Lpos+4,$Rpos-4);
+
+$pos1 = strpos($html ,"RSSI"); 
+$test = substr($html, ($pos1),42);//print"[$test]";
+$Lpos = strpos($test, '<td>');
+$newtest= substr($test,$Lpos,22); 
+$Rpos = strpos($newtest, '</td>');
+$RSSI = substr($newtest, 4,$Rpos-4);
+//print substr($test, $Lpos+4,$Rpos-4);
+
+//Current radio band</td>
+//<td>LTE Band 30 - 2300MHz</td>
+$pos1 = strpos($html ,"Current radio band"); 
+$test = substr($html, ($pos1),75);//print"[$test]";
+$Lpos = strpos($test, '<td>');
+$newtest= substr($test,$Lpos,32); 
+$Rpos = strpos($newtest, '</td>');
+$band = substr($newtest, 4,$Rpos-4);
+//print substr($test, $Lpos+4,$Rpos-4);
+
+
+$pos1 = strpos($html ,"Cell ID"); 
+$test = substr($html, ($pos1),59);//print"[$test]";
+$Lpos = strpos($test, '<td>');
+$newtest= substr($test,$Lpos,32); 
+$Rpos = strpos($newtest, '</td>');
+$cellid = substr($newtest, 4,$Rpos-4);
+//print substr($test, $Lpos+4,$Rpos-4);
+//
+$pos1 = strpos($html ,"TAC"); 
+$test = substr($html, ($pos1),42);//print"[$test]";
+$Lpos = strpos($test, '<td>');
+$newtest= substr($test,$Lpos,22); 
+$Rpos = strpos($newtest, '</td>');
+$tac = substr($newtest, 4,$Rpos-4);
+//print substr($test, $Lpos+4,$Rpos-4);
+$pos1 = strpos($html ,"RFCN"); 
+$test = substr($html, ($pos1),42);//print"[$test]";
+$Lpos = strpos($test, '<td>');
+$newtest= substr($test,$Lpos,22); 
+$Rpos = strpos($newtest, '</td>');
+$rfcn = substr($newtest, 4,$Rpos-4);
+//print substr($test, $Lpos+4,$Rpos-4);
+
+// during falure
+//RFCN	9820
+//TAC	52736
+//Cell ID	48317333
+//ECGI	310410048317333
 
 
 
 $fileOUT = fopen("$path/$file", "a");
 flock( $fileOUT, LOCK_EX );
-fwrite ($fileOUT, "$datum,$online,$status,$signal,, \n");
+fwrite ($fileOUT, "$time,$online,$status,$signal,$Temperature,$RSRP,$RSRQ,$RSSI,$cellid,$tac,$rfcn,$band,, \n");
 flock( $fileOUT, LOCK_UN );
 fclose ($fileOUT);
 die;
