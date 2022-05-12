@@ -140,11 +140,6 @@ $Rpos = strpos($newtest, '</td>');
 $rfcn = substr($newtest, 4,$Rpos-4);
 //print substr($test, $Lpos+4,$Rpos-4);
 
-// during falure
-//RFCN	9820
-//TAC	52736
-//Cell ID	48317333
-//ECGI	310410048317333
 
 
 
