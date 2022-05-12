@@ -26,7 +26,7 @@
 
 
 
-// modem pi
+// modem 
 //$ip  ="192.168.2.240";
 $ip  ="192.168.0.1";
 $url ="/xslt?PAGE=C_0_0";//mode
